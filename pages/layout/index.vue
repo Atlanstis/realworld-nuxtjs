@@ -3,24 +3,35 @@
     <!-- 顶部导航栏 -->
     <nav class="navbar navbar-light">
       <div class="container">
-        <a class="navbar-brand" href="index.html">conduit</a>
+        <nuxt-link class="navbar-brand" to="/">conduit</nuxt-link>
         <ul class="nav navbar-nav pull-xs-right">
           <li class="nav-item">
-            <!-- Add "active" class when you're on that page" -->
-            <a class="nav-link active" href="">Home</a>
+            <nuxt-link to="/" exact class="nav-link">Home</nuxt-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">
+            <nuxt-link to="/editor" class="nav-link">
               <i class="ion-compose"></i>&nbsp;New Post
-            </a>
+            </nuxt-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">
+            <nuxt-link to="/settings" class="nav-link">
               <i class="ion-gear-a"></i>&nbsp;Settings
-            </a>
+            </nuxt-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">Sign up</a>
+            <nuxt-link to="/login" class="nav-link">Sign in</nuxt-link>
+          </li>
+          <li class="nav-item">
+            <nuxt-link to="/register" class="nav-link">Sign up</nuxt-link>
+          </li>
+          <li class="nav-item">
+            <nuxt-link class="nav-link" to="/profile/123">
+              <img
+                class="user-pic"
+                src="https://sf6-ttcdn-tos.pstatp.com/img/user-avatar/0a6c7f8259f8a50d1ab77365c27387e1~300x300.image"
+              />
+              丨Gypsophila丶
+            </nuxt-link>
           </li>
         </ul>
       </div>

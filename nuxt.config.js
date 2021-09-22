@@ -3,6 +3,7 @@
  */
 module.exports = {
   router: {
+    linkActiveClass: 'active',
     // 自定义路由表规则
     extendRoutes(routes, resolve) {
       // 清除基于 pages 目录生成的路由表规则
