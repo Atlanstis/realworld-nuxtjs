@@ -12,6 +12,10 @@
 
 [页面模板](https://github.com/gothinkster/realworld-starter-kit/blob/master/FRONTEND_INSTRUCTIONS.md)
 
+## Nuxt.js
+
+[Nuxt.js - Vue.js 通用应用框架 | Nuxt.js 中文网](https://www.nuxtjs.cn/)
+
 ## 使用
 
 开发环境启动：
