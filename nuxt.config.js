@@ -33,6 +33,11 @@ module.exports = {
                 path: '/profile',
                 name: 'Profile',
                 component: resolve(__dirname, 'pages/profile')
+              },
+              {
+                path: '/settings',
+                name: 'Settings',
+                component: resolve(__dirname, 'pages/settings')
               }
             ]
           }
