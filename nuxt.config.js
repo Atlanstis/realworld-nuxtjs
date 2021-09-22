@@ -38,6 +38,11 @@ module.exports = {
                 path: '/settings',
                 name: 'Settings',
                 component: resolve(__dirname, 'pages/settings')
+              },
+              {
+                path: '/editor',
+                name: 'Editor',
+                component: resolve(__dirname, 'pages/editor')
               }
             ]
           }
