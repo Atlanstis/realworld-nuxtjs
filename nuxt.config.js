@@ -28,6 +28,11 @@ module.exports = {
                 path: '/register',
                 name: 'Register',
                 component: resolve(__dirname, 'pages/login')
+              },
+              {
+                path: '/profile',
+                name: 'Profile',
+                component: resolve(__dirname, 'pages/profile')
               }
             ]
           }
