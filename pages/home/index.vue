@@ -66,7 +66,8 @@
                   :to="{
                     name: 'Home',
                     query: {
-                      page: item
+                      page: item,
+                      tag: $route.query.tag
                     }
                   }"
                   >{{ item }}</nuxt-link
@@ -81,14 +82,18 @@
             <p>Popular Tags</p>
 
             <div class="tag-list">
-              <a href="" class="tag-pill tag-default">programming</a>
-              <a href="" class="tag-pill tag-default">javascript</a>
-              <a href="" class="tag-pill tag-default">emberjs</a>
-              <a href="" class="tag-pill tag-default">angularjs</a>
-              <a href="" class="tag-pill tag-default">react</a>
-              <a href="" class="tag-pill tag-default">mean</a>
-              <a href="" class="tag-pill tag-default">node</a>
-              <a href="" class="tag-pill tag-default">rails</a>
+              <nuxt-link
+                v-for="tag of tags"
+                :key="tag"
+                :to="{
+                  name: 'Home',
+                  query: {
+                    tag
+                  }
+                }"
+                class="tag-pill tag-default"
+                >{{ tag }}</nuxt-link
+              >
             </div>
           </div>
         </div>
@@ -98,7 +103,7 @@
 </template>
 
 <script>
-import { getArticles } from '@/api'
+import { getArticles, getTags } from '@/api'
 
 export default {
   name: 'HomeIndex',
@@ -106,22 +111,32 @@ export default {
   async asyncData({ query }) {
     const page = Number.parseInt(query.page || 1)
     const limit = 10
-    const {
-      data: { articlesCount, articles }
-    } = await getArticles({
-      limit,
-      offset: (page - 1) * limit
-    })
+    const [
+      {
+        data: { articlesCount, articles }
+      },
+      {
+        data: { tags }
+      }
+    ] = await Promise.all([
+      getArticles({
+        limit,
+        offset: (page - 1) * limit,
+        tag: query.tag
+      }),
+      getTags()
+    ])
     return {
       articlesCount,
       articles,
       page,
-      limit
+      limit,
+      tags: tags.slice(0, 20)
     }
   },
 
   // 监听 query 的改变
-  watchQuery: ['page'],
+  watchQuery: ['page', 'tag'],
 
   computed: {
     totalPage() {
