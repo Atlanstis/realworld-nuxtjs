@@ -14,7 +14,7 @@
             <ul class="nav nav-pills outline-active">
               <li v-if="user" class="nav-item">
                 <nuxt-link
-                  class="nav-link disabled"
+                  class="nav-link"
                   :class="{ active: tab === 'your_feed' }"
                   exact
                   :to="{
@@ -103,7 +103,8 @@
                     name: 'Home',
                     query: {
                       page: item,
-                      tag: tag
+                      tag: tag,
+                      tab: tab
                     }
                   }"
                   >{{ item }}</nuxt-link
@@ -139,15 +140,23 @@
 </template>
 
 <script>
-import { getArticles, getTags } from '@/api'
+import { getArticles, getArticlesFeed, getTags } from '@/api'
 import { mapState } from 'vuex'
 
 export default {
   name: 'HomeIndex',
 
-  async asyncData({ query: { page, tag, tab } }) {
+  async asyncData({
+    query: { page, tag, tab },
+    store: {
+      state: { user }
+    }
+  }) {
     page = Number.parseInt(page || 1)
     const limit = 10
+    tab = tab || 'global_feed'
+    const getArticlesApi =
+      user && tab === 'your_feed' ? getArticlesFeed : getArticles
     const [
       {
         data: { articlesCount, articles }
@@ -156,7 +165,7 @@ export default {
         data: { tags }
       }
     ] = await Promise.all([
-      getArticles({
+      getArticlesApi({
         limit,
         offset: (page - 1) * limit,
         tag: tag
