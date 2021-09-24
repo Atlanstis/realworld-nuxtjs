@@ -32,3 +32,10 @@ export const deleteFavorite = (slug) => {
     url: `/api/articles/${slug}/favorite`
   })
 }
+
+export const getArticle = (slug) => {
+  return request({
+    method: 'GET',
+    url: `/api/articles/${slug}`
+  })
+}
