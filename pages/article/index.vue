@@ -101,6 +101,21 @@ export default {
     ArticleMeta
   },
 
+  // 设置 title，meta 信息等
+  // https://www.nuxtjs.cn/guide/views#%E4%B8%AA%E6%80%A7%E5%8C%96%E7%89%B9%E5%AE%9A%E9%A1%B5%E9%9D%A2%E7%9A%84-meta-%E6%A0%87%E7%AD%BE
+  head() {
+    return {
+      title: `${this.article.title} - RealWorld`,
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.article.description
+        }
+      ]
+    }
+  },
+
   async asyncData({ params: { slug } }) {
     const {
       data: { article }
