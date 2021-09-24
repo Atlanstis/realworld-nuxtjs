@@ -58,7 +58,7 @@
           </div>
 
           <div
-            v-for="article of articles"
+            v-for="(article, i) of articles"
             :key="article.slug"
             class="article-preview"
           >
@@ -75,6 +75,8 @@
               <button
                 class="btn btn-outline-primary btn-sm pull-xs-right"
                 :class="{ active: article.favorited }"
+                :disabled="article._favouriteDisabled"
+                @click="onFavourite(article, i)"
               >
                 <i class="ion-heart"></i> {{ article.favoritesCount }}
               </button>
@@ -140,7 +142,13 @@
 </template>
 
 <script>
-import { getArticles, getArticlesFeed, getTags } from '@/api'
+import {
+  getArticles,
+  getArticlesFeed,
+  getTags,
+  addFavorite,
+  deleteFavorite
+} from '@/api'
 import { mapState } from 'vuex'
 
 export default {
@@ -172,6 +180,9 @@ export default {
       }),
       getTags()
     ])
+    articles.forEach((article) => {
+      article._favouriteDisabled = false
+    })
     return {
       articlesCount,
       articles,
@@ -201,6 +212,16 @@ export default {
           username: article.author.username
         }
       }
+    },
+
+    async onFavourite(article, i) {
+      const api = article.favorited ? deleteFavorite : addFavorite
+      article._favouriteDisabled = true
+      const {
+        data: { article: newArticle }
+      } = await api(article.slug)
+      newArticle._favouriteDisabled = false
+      this.articles.splice(i, 1, newArticle)
     }
   }
 }
