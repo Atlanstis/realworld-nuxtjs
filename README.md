@@ -18,9 +18,23 @@
 
 ## 使用
 
-开发环境启动：
+[命令](https://www.nuxtjs.cn/guide/commands)
+
+### 开发环境启动
 
 ```shell
 yarn run dev
+```
+
+### 打包
+
+```shell
+yarn run build
+```
+
+### 本地服务启动
+
+```
+yarn run start
 ```
 
