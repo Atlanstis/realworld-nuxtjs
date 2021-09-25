@@ -7,7 +7,7 @@
           username: article.author.username
         }
       }"
-      ><img :src="article.author.image"
+      ><img :src="article.author.image || '/smiley-cyrus.jpeg'"
     /></nuxt-link>
     <div class="info">
       <nuxt-link
@@ -28,21 +28,24 @@
     >
       <i class="ion-plus-round"></i>
       &nbsp; Follow {{ article.author.username }}
-      <span class="counter">(10)</span>
+      <!-- <span class="counter">(10)</span> -->
     </button>
     &nbsp;&nbsp;
     <button
       class="btn btn-sm btn-outline-primary"
       :class="{ active: article.favorited }"
+      @click="onArticleFavorite"
     >
       <i class="ion-heart"></i>
-      &nbsp; Favorite Post
+      &nbsp; {{ !article.favorited ? 'Favorite' : 'Unfavorite' }} Article
       <span class="counter">({{ article.favoritesCount }})</span>
     </button>
   </div>
 </template>
 
 <script>
+import { addFavorite, deleteFavorite } from '@/api'
+
 export default {
   name: 'ArticleMeta',
 
@@ -50,6 +53,29 @@ export default {
     article: {
       type: Object,
       default: () => {}
+    }
+  },
+
+  data() {
+    return {
+      favouriteDisabled: false
+    }
+  },
+
+  methods: {
+    // 文章点赞及取消
+    async onArticleFavorite() {
+      const api = this.article.favorited ? deleteFavorite : addFavorite
+      this.favouriteDisabled = true
+      try {
+        const {
+          data: { article }
+        } = await api(this.article.slug)
+        this.favouriteDisabled = false
+        this.$emit('update', article)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }

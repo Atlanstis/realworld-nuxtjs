@@ -4,7 +4,7 @@
       <div class="container">
         <h1>{{ article.title }}</h1>
 
-        <article-meta :article="article"></article-meta>
+        <article-meta :article="article" @update="updateArticle"></article-meta>
       </div>
     </div>
 
@@ -16,7 +16,7 @@
       <hr />
 
       <div class="article-actions">
-        <article-meta :article="article"></article-meta>
+        <article-meta :article="article" @update="updateArticle"></article-meta>
       </div>
 
       <div class="row">
@@ -34,6 +34,12 @@ import { getArticle } from '@/api'
 import MarkownIt from 'markdown-it'
 import ArticleMeta from './components/article-meta.vue'
 import ArticleComment from './components/article-comment.vue'
+
+// 处理文章内容
+const articleFormat = (article) => {
+  const md = new MarkownIt()
+  article.body = md.render(article.body)
+}
 
 export default {
   name: 'Article',
@@ -62,10 +68,17 @@ export default {
     const {
       data: { article }
     } = await getArticle(slug)
-    const md = new MarkownIt()
-    article.body = md.render(article.body)
+    articleFormat(article)
     return {
       article
+    }
+  },
+
+  methods: {
+    // 更新文章信息
+    updateArticle(article) {
+      articleFormat(article)
+      this.article = article
     }
   }
 }
