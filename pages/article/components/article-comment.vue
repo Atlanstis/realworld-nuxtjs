@@ -1,16 +1,20 @@
 <template>
   <div>
-    <form class="card comment-form">
+    <form @submit.prevent="onCommentSubmit" class="card comment-form">
       <div class="card-block">
         <textarea
+          v-model="comment"
           class="form-control"
           placeholder="Write a comment..."
           rows="3"
         ></textarea>
       </div>
       <div class="card-footer">
-        <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img" />
-        <button class="btn btn-sm btn-primary">
+        <img
+          :src="user.iamge || '/smiley-cyrus.jpeg'"
+          class="comment-author-img"
+        />
+        <button :disabled="commentDisabled" class="btn btn-sm btn-primary">
           Post Comment
         </button>
       </div>
@@ -32,7 +36,10 @@
           }"
           class="comment-author"
         >
-          <img :src="comment.author.image" class="comment-author-img" />
+          <img
+            :src="comment.author.image || '/smiley-cyrus.jpeg'"
+            class="comment-author-img"
+          />
         </nuxt-link>
         &nbsp;
         <nuxt-link
@@ -48,13 +55,20 @@
         <span class="date-posted">{{
           comment.createdAt | date('MMM DD, YYYY')
         }}</span>
+        <span
+          v-if="user.username === comment.author.username"
+          class="mod-options"
+        >
+          <i class="ion-trash-a" @click="deleteComment(comment)"></i>
+        </span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getComments } from '@/api'
+import { getComments, addComments, deleteComments } from '@/api'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ArticleComment',
@@ -68,15 +82,54 @@ export default {
 
   data() {
     return {
-      comments: []
+      comments: [],
+      comment: '',
+      commentDisabled: false
     }
   },
 
-  async mounted() {
-    const {
-      data: { comments }
-    } = await getComments(this.article.slug)
-    this.comments = comments
+  computed: {
+    ...mapState(['user'])
+  },
+
+  mounted() {
+    this.getComments()
+  },
+
+  methods: {
+    async getComments() {
+      const {
+        data: { comments }
+      } = await getComments(this.article.slug)
+      this.comments = comments
+    },
+
+    // 提交评论
+    async onCommentSubmit() {
+      try {
+        if (!this.comment.trim()) {
+          return
+        }
+        this.commentDisabled = true
+        await addComments({
+          slug: this.article.slug,
+          comment: { body: this.comment }
+        })
+        this.comment = ''
+        this.getComments()
+      } catch (error) {
+      } finally {
+        this.commentDisabled = false
+      }
+    },
+
+    // 删除评论
+    async deleteComment(comment) {
+      try {
+        await deleteComments({ slug: this.article.slug, id: comment.id })
+        this.getComments()
+      } catch (error) {}
+    }
   }
 }
 </script>
