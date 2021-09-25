@@ -56,7 +56,10 @@
               </li>
             </ul>
           </div>
-
+          <!-- 文章列表 Start -->
+          <div v-if="!articles.length" class="article-preview">
+            No articles are here... yet.
+          </div>
           <div
             v-for="(article, i) of articles"
             :key="article.slug"
@@ -90,7 +93,8 @@
               <span>Read more...</span>
             </nuxt-link>
           </div>
-          <!-- 页码 -->
+          <!-- 文章列表 End -->
+          <!-- 页码 Start -->
           <nav>
             <ul class="pagination">
               <li
@@ -114,6 +118,7 @@
               </li>
             </ul>
           </nav>
+          <!-- 页码 End -->
         </div>
 
         <div class="col-md-3">
