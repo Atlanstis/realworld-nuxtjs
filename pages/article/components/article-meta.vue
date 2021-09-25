@@ -25,10 +25,12 @@
     <button
       class="btn btn-sm btn-outline-secondary"
       :class="{ active: article.author.following }"
+      :disabled="followDisabled"
+      @click="onUserFollow"
     >
       <i class="ion-plus-round"></i>
-      &nbsp; Follow {{ article.author.username }}
-      <!-- <span class="counter">(10)</span> -->
+      &nbsp; {{ !article.author.following ? 'Follow' : 'Unfollow' }}
+      {{ article.author.username }}
     </button>
     &nbsp;&nbsp;
     <button
@@ -44,7 +46,7 @@
 </template>
 
 <script>
-import { addFavorite, deleteFavorite } from '@/api'
+import { addFavorite, deleteFavorite, followUser, unfollowUser } from '@/api'
 
 export default {
   name: 'ArticleMeta',
@@ -58,7 +60,8 @@ export default {
 
   data() {
     return {
-      favouriteDisabled: false
+      favouriteDisabled: false,
+      followDisabled: false
     }
   },
 
@@ -73,9 +76,20 @@ export default {
         } = await api(this.article.slug)
         this.favouriteDisabled = false
         this.$emit('update', article)
-      } catch (error) {
-        console.error(error)
-      }
+      } catch (error) {}
+    },
+
+    // 用户关注及取消
+    async onUserFollow() {
+      const api = this.article.author.following ? unfollowUser : followUser
+      this.followDisabled = true
+      try {
+        const {
+          data: { profile }
+        } = await api(this.article.author.username)
+        this.followDisabled = false
+        this.$emit('updateAuthor', profile)
+      } catch (error) {}
     }
   }
 }

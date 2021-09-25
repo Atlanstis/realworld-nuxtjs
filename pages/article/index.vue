@@ -4,7 +4,11 @@
       <div class="container">
         <h1>{{ article.title }}</h1>
 
-        <article-meta :article="article" @update="updateArticle"></article-meta>
+        <article-meta
+          :article="article"
+          @update="updateArticle"
+          @updateAuthor="updateAuthor"
+        ></article-meta>
       </div>
     </div>
 
@@ -16,7 +20,11 @@
       <hr />
 
       <div class="article-actions">
-        <article-meta :article="article" @update="updateArticle"></article-meta>
+        <article-meta
+          :article="article"
+          @update="updateArticle"
+          @updateAuthor="updateAuthor"
+        ></article-meta>
       </div>
 
       <div class="row">
@@ -79,6 +87,11 @@ export default {
     updateArticle(article) {
       articleFormat(article)
       this.article = article
+    },
+
+    // 更新作者信息
+    updateAuthor(author) {
+      this.article.author = author
     }
   }
 }
