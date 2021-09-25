@@ -230,11 +230,13 @@ export default {
       // 执行点赞操作
       const api = article.favorited ? deleteFavorite : addFavorite
       article._favouriteDisabled = true
-      const {
-        data: { article: newArticle }
-      } = await api(article.slug)
-      newArticle._favouriteDisabled = false
-      this.articles.splice(i, 1, newArticle)
+      try {
+        const {
+          data: { article: newArticle }
+        } = await api(article.slug)
+        newArticle._favouriteDisabled = false
+        this.articles.splice(i, 1, newArticle)
+      } catch (error) {}
     }
   }
 }
