@@ -20,8 +20,17 @@
               </nuxt-link>
             </li>
             <li class="nav-item">
-              <nuxt-link class="nav-link" to="/profile/123">
+              <nuxt-link
+                class="nav-link"
+                :to="{
+                  name: 'Profile',
+                  params: {
+                    username: user.username
+                  }
+                }"
+              >
                 <img
+                  v-if="user.image"
                   class="user-pic"
                   src="https://sf6-ttcdn-tos.pstatp.com/img/user-avatar/0a6c7f8259f8a50d1ab77365c27387e1~300x300.image"
                 />
