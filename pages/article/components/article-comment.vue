@@ -1,6 +1,22 @@
 <template>
   <div>
-    <form @submit.prevent="onCommentSubmit" class="card comment-form">
+    <p v-if="!user" style="display: inherit;">
+      <nuxt-link
+        :to="{
+          name: 'Login'
+        }"
+        >Sign in</nuxt-link
+      >
+      or
+      <nuxt-link
+        :to="{
+          name: 'Register'
+        }"
+        >sign up</nuxt-link
+      >
+      to add comments on this article.
+    </p>
+    <form v-else @submit.prevent="onCommentSubmit" class="card comment-form">
       <div class="card-block">
         <textarea
           v-model="comment"
@@ -56,7 +72,7 @@
           comment.createdAt | date('MMM DD, YYYY')
         }}</span>
         <span
-          v-if="user.username === comment.author.username"
+          v-if="user && user.username === comment.author.username"
           class="mod-options"
         >
           <i class="ion-trash-a" @click="deleteComment(comment)"></i>
