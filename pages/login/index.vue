@@ -44,7 +44,10 @@
                 minlength="5"
               />
             </fieldset>
-            <button class="btn btn-lg btn-primary pull-xs-right">
+            <button
+              :disabled="btnDisabled"
+              class="btn btn-lg btn-primary pull-xs-right"
+            >
               {{ isLogin ? 'Sign in' : 'Sign up' }}
             </button>
           </form>
@@ -78,16 +81,19 @@ export default {
         email: '',
         password: ''
       },
-      errors: {}
+      errors: {},
+      btnDisabled: false
     }
   },
 
   methods: {
     async onSubmit() {
       try {
+        this.btnDisabled = true
         const { data } = this.isLogin
           ? await login({ user: this.user })
           : await register({ user: this.user })
+        this.btnDisabled = false
         // 客户端存储
         this.$store.commit('setUser', data.user)
         // 为了防止刷新页面数据丢失，我们需要把数据持久化
@@ -96,6 +102,7 @@ export default {
         this.$router.push('/')
       } catch (error) {
         this.errors = error.response.data.errors
+        this.btnDisabled = false
       }
     }
   }
