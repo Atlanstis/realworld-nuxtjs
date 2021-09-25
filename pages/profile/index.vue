@@ -4,16 +4,31 @@
       <div class="container">
         <div class="row">
           <div class="col-xs-12 col-md-10 offset-md-1">
-            <img src="http://i.imgur.com/Qr71crq.jpg" class="user-img" />
-            <h4>Eric Simons</h4>
+            <img :src="profile.image" class="user-img" />
+            <h4>{{ profile.username }}</h4>
             <p>
-              Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda
-              looks like Peeta from the Hunger Games
+              {{ profile.bio }}
             </p>
-            <button class="btn btn-sm btn-outline-secondary action-btn">
+            <button
+              v-if="!isSelf"
+              class="btn btn-sm btn-outline-secondary action-btn"
+              :class="{ active: profile.following }"
+              :disabled="followDisabled"
+              @click="onUserFollow(profile)"
+            >
               <i class="ion-plus-round"></i>
-              &nbsp; Follow Eric Simons
+              &nbsp; {{ !profile.following ? 'Follow' : 'Unfollow' }}
+              {{ profile.username }}
             </button>
+            <nuxt-link
+              v-else
+              class="btn btn-sm btn-outline-secondary action-btn"
+              :to="{
+                name: 'Settings'
+              }"
+            >
+              <i class="ion-gear-a"></i> Edit Profile Settings
+            </nuxt-link>
           </div>
         </div>
       </div>
@@ -82,8 +97,50 @@
 </template>
 
 <script>
+import { getProfile } from '@/api'
+import { mapState } from 'vuex'
+import UserFollowMixin from '@/mixins/user-follow'
+
 export default {
   name: 'Profile',
-  middleware: 'authenticated'
+
+  middleware: 'authenticated',
+
+  mixins: [UserFollowMixin],
+
+  async asyncData({ params: { username } }) {
+    const {
+      data: { profile }
+    } = await getProfile(username)
+    return {
+      profile
+    }
+  },
+
+  head() {
+    return {
+      title: `${this.profile.username} - RealWorld`,
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.profile.bio
+        }
+      ]
+    }
+  },
+
+  computed: {
+    isSelf() {
+      return this.user && this.user.username === this.profile.username
+    },
+    ...mapState(['user'])
+  },
+
+  methods: {
+    afterFollowHandle(profile) {
+      this.profile = profile
+    }
+  }
 }
 </script>

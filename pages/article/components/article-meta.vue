@@ -26,7 +26,7 @@
       class="btn btn-sm btn-outline-secondary"
       :class="{ active: article.author.following }"
       :disabled="followDisabled"
-      @click="onUserFollow"
+      @click="onUserFollow(article.author)"
     >
       <i class="ion-plus-round"></i>
       &nbsp; {{ !article.author.following ? 'Follow' : 'Unfollow' }}
@@ -46,10 +46,13 @@
 </template>
 
 <script>
-import { addFavorite, deleteFavorite, followUser, unfollowUser } from '@/api'
+import { addFavorite, deleteFavorite } from '@/api'
+import UserFollowMixin from '@/mixins/user-follow'
 
 export default {
   name: 'ArticleMeta',
+
+  mixins: [UserFollowMixin],
 
   props: {
     article: {
@@ -60,8 +63,7 @@ export default {
 
   data() {
     return {
-      favouriteDisabled: false,
-      followDisabled: false
+      favouriteDisabled: false
     }
   },
 
@@ -79,17 +81,8 @@ export default {
       } catch (error) {}
     },
 
-    // 用户关注及取消
-    async onUserFollow() {
-      const api = this.article.author.following ? unfollowUser : followUser
-      this.followDisabled = true
-      try {
-        const {
-          data: { profile }
-        } = await api(this.article.author.username)
-        this.followDisabled = false
-        this.$emit('updateAuthor', profile)
-      } catch (error) {}
+    afterFollowHandle(profile) {
+      this.$emit('updateAuthor', profile)
     }
   }
 }
