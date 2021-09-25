@@ -215,6 +215,14 @@ export default {
     },
 
     async onFavourite(article, i) {
+      // 未登录跳转至登陆页
+      if (!this.user) {
+        this.$router.push({
+          name: 'Login'
+        })
+        return
+      }
+      // 执行点赞操作
       const api = article.favorited ? deleteFavorite : addFavorite
       article._favouriteDisabled = true
       const {
