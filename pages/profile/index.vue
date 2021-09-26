@@ -40,56 +40,43 @@
           <div class="articles-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a class="nav-link active" href="">My Articles</a>
+                <nuxt-link
+                  class="nav-link"
+                  :class="{ active: query.author }"
+                  exact
+                  :to="{
+                    name: 'Profile',
+                    query: {
+                      author: profile.username
+                    }
+                  }"
+                  >My Articles</nuxt-link
+                >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="">Favorited Articles</a>
+                <nuxt-link
+                  class="nav-link"
+                  :class="{ active: query.favorited }"
+                  exact
+                  :to="{
+                    name: 'Profile',
+                    query: {
+                      favorited: profile.username
+                    }
+                  }"
+                  >Favorited Articles</nuxt-link
+                >
               </li>
             </ul>
           </div>
-
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/Qr71crq.jpg"/></a>
-              <div class="info">
-                <a href="" class="author">Eric Simons</a>
-                <span class="date">January 20th</span>
-              </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 29
-              </button>
-            </div>
-            <a href="" class="preview-link">
-              <h1>How to build webapps that scale</h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-            </a>
-          </div>
-
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg"/></a>
-              <div class="info">
-                <a href="" class="author">Albert Pai</a>
-                <span class="date">January 20th</span>
-              </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 32
-              </button>
-            </div>
-            <a href="" class="preview-link">
-              <h1>
-                The song you won't ever stop singing. No matter how hard you
-                try.
-              </h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-              <ul class="tag-list">
-                <li class="tag-default tag-pill tag-outline">Music</li>
-                <li class="tag-default tag-pill tag-outline">Song</li>
-              </ul>
-            </a>
-          </div>
+          <articles
+            :articles="articles"
+            :articlesCount="articlesCount"
+            :limit="limit"
+            :page="page"
+            :query="query"
+            :pageRouteName="'Profile'"
+          ></articles>
         </div>
       </div>
     </div>
@@ -97,23 +84,49 @@
 </template>
 
 <script>
-import { getProfile } from '@/api'
+import { getProfile, getArticles } from '@/api'
 import { mapState } from 'vuex'
 import UserFollowMixin from '@/mixins/user-follow'
+import Articles from '@/components/articles'
 
 export default {
   name: 'Profile',
 
-  middleware: 'authenticated',
+  middleware: ['authenticated', 'profile'],
+
+  components: { Articles },
+
+  watchQuery: ['favorited', 'author', 'page'],
 
   mixins: [UserFollowMixin],
 
-  async asyncData({ params: { username } }) {
-    const {
-      data: { profile }
-    } = await getProfile(username)
+  async asyncData({
+    params: { username },
+    query: { page, author, favorited }
+  }) {
+    page = Number.parseInt(page || 1)
+    const limit = 10
+    const [
+      {
+        data: { profile }
+      },
+      {
+        data: { articles, articlesCount }
+      }
+    ] = await Promise.all([
+      getProfile(username),
+      getArticles({ author, favorited, limit, offset: (page - 1) * limit })
+    ])
     return {
-      profile
+      profile,
+      articles,
+      articlesCount,
+      limit,
+      page,
+      query: {
+        author,
+        favorited
+      }
     }
   },
 
@@ -124,7 +137,7 @@ export default {
         {
           hid: 'description',
           name: 'description',
-          content: this.profile.bio
+          content: this.profile.bio || ''
         }
       ]
     }

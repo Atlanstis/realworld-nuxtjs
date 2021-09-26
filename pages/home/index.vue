@@ -56,69 +56,14 @@
               </li>
             </ul>
           </div>
-          <!-- 文章列表 Start -->
-          <div v-if="!articles.length" class="article-preview">
-            No articles are here... yet.
-          </div>
-          <div
-            v-for="(article, i) of articles"
-            :key="article.slug"
-            class="article-preview"
-          >
-            <div class="article-meta">
-              <nuxt-link :to="userLinkTo(article)"
-                ><img :src="article.author.image"
-              /></nuxt-link>
-              <div class="info">
-                <nuxt-link :to="userLinkTo(article)" class="author">{{
-                  article.author.username
-                }}</nuxt-link>
-                <span class="date">{{ article.createdAt | date }}</span>
-              </div>
-              <button
-                class="btn btn-outline-primary btn-sm pull-xs-right"
-                :class="{ active: article.favorited }"
-                :disabled="article._favouriteDisabled"
-                @click="onFavourite(article, i)"
-              >
-                <i class="ion-heart"></i> {{ article.favoritesCount }}
-              </button>
-            </div>
-            <nuxt-link
-              :to="{ name: 'Article', params: { slug: article.slug } }"
-              class="preview-link"
-            >
-              <h1>{{ article.title }}</h1>
-              <p>{{ article.description }}</p>
-              <span>Read more...</span>
-            </nuxt-link>
-          </div>
-          <!-- 文章列表 End -->
-          <!-- 页码 Start -->
-          <nav>
-            <ul class="pagination">
-              <li
-                v-for="item of totalPage"
-                :key="item"
-                class="page-item"
-                :class="{ active: page === item }"
-              >
-                <nuxt-link
-                  class="page-link"
-                  :to="{
-                    name: 'Home',
-                    query: {
-                      page: item,
-                      tag: tag,
-                      tab: tab
-                    }
-                  }"
-                  >{{ item }}</nuxt-link
-                >
-              </li>
-            </ul>
-          </nav>
-          <!-- 页码 End -->
+          <articles
+            :articles="articles"
+            :articlesCount="articlesCount"
+            :limit="limit"
+            :page="page"
+            :query="query"
+            :pageRouteName="'Home'"
+          ></articles>
         </div>
 
         <div class="col-md-3">
@@ -155,9 +100,14 @@ import {
   deleteFavorite
 } from '@/api'
 import { mapState } from 'vuex'
+import Articles from '@/components/articles'
 
 export default {
   name: 'HomeIndex',
+
+  components: {
+    Articles
+  },
 
   async asyncData({
     query: { page, tag, tab },
@@ -195,7 +145,11 @@ export default {
       limit,
       tags: tags.slice(0, 20),
       tag,
-      tab: tab || 'global_feed'
+      tab: tab || 'global_feed',
+      query: {
+        tag,
+        tab
+      }
     }
   },
 
@@ -203,41 +157,7 @@ export default {
   watchQuery: ['page', 'tag', 'tab'],
 
   computed: {
-    totalPage() {
-      return Math.ceil(this.articlesCount / this.limit)
-    },
     ...mapState(['user'])
-  },
-
-  methods: {
-    userLinkTo(article) {
-      return {
-        name: 'Profile',
-        params: {
-          username: article.author.username
-        }
-      }
-    },
-
-    async onFavourite(article, i) {
-      // 未登录跳转至登陆页
-      if (!this.user) {
-        this.$router.push({
-          name: 'Login'
-        })
-        return
-      }
-      // 执行点赞操作
-      const api = article.favorited ? deleteFavorite : addFavorite
-      article._favouriteDisabled = true
-      try {
-        const {
-          data: { article: newArticle }
-        } = await api(article.slug)
-        newArticle._favouriteDisabled = false
-        this.articles.splice(i, 1, newArticle)
-      } catch (error) {}
-    }
   }
 }
 </script>
