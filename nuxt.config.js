@@ -62,6 +62,18 @@ module.exports = {
     port: '3000'
   },
 
+  head: {
+    title: 'Realword',
+    link: [
+      {
+        hid: 'icon',
+        rel: 'icon',
+        type: 'image/x-icon',
+        href: 'favicon.ico'
+      }
+    ]
+  },
+
   //注册插件
   plugins: ['~/plugins/request.js', '~/plugins/dayjs.js']
 }
