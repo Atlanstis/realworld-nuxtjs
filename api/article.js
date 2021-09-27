@@ -65,3 +65,12 @@ export const deleteComments = ({ slug, id }) => {
     url: `/api/articles/${slug}/comments/${id}`
   })
 }
+
+// 新建文章
+export const addArticle = (data) => {
+  return request({
+    method: 'POST',
+    url: '/api/articles',
+    data
+  })
+}
