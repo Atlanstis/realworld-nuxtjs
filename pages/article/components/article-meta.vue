@@ -22,32 +22,52 @@
       >
       <span class="date">{{ article.createdAt | date('MMM DD, YYYY') }}</span>
     </div>
-    <button
-      class="btn btn-sm btn-outline-secondary"
-      :class="{ active: article.author.following }"
-      :disabled="followDisabled"
-      @click="onUserFollow(article.author)"
-    >
-      <i class="ion-plus-round"></i>
-      &nbsp; {{ !article.author.following ? 'Follow' : 'Unfollow' }}
-      {{ article.author.username }}
-    </button>
-    &nbsp;&nbsp;
-    <button
-      class="btn btn-sm btn-outline-primary"
-      :class="{ active: article.favorited }"
-      @click="onArticleFavorite"
-    >
-      <i class="ion-heart"></i>
-      &nbsp; {{ !article.favorited ? 'Favorite' : 'Unfavorite' }} Article
-      <span class="counter">({{ article.favoritesCount }})</span>
-    </button>
+    <template v-if="isSelf">
+      <a
+        class="btn btn-outline-secondary btn-sm"
+        ui-sref="app.editor({ slug: $ctrl.article.slug })"
+        href="#/editor/1234352345"
+      >
+        <i class="ion-edit"></i> Edit Article
+      </a>
+
+      <button
+        class="btn btn-outline-danger btn-sm"
+        :disabled="deleteDisabled"
+        @click="onDeleteArticle"
+      >
+        <i class="ion-trash-a"></i> Delete Article
+      </button>
+    </template>
+    <template v-else>
+      <button
+        class="btn btn-sm btn-outline-secondary"
+        :class="{ active: article.author.following }"
+        :disabled="followDisabled"
+        @click="onUserFollow(article.author)"
+      >
+        <i class="ion-plus-round"></i>
+        &nbsp; {{ !article.author.following ? 'Follow' : 'Unfollow' }}
+        {{ article.author.username }}
+      </button>
+      &nbsp;&nbsp;
+      <button
+        class="btn btn-sm btn-outline-primary"
+        :class="{ active: article.favorited }"
+        @click="onArticleFavorite"
+      >
+        <i class="ion-heart"></i>
+        &nbsp; {{ !article.favorited ? 'Favorite' : 'Unfavorite' }} Article
+        <span class="counter">({{ article.favoritesCount }})</span>
+      </button>
+    </template>
   </div>
 </template>
 
 <script>
-import { addFavorite, deleteFavorite } from '@/api'
+import { addFavorite, deleteFavorite, deleteArticle } from '@/api'
 import UserFollowMixin from '@/mixins/user-follow'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ArticleMeta',
@@ -63,8 +83,16 @@ export default {
 
   data() {
     return {
-      favouriteDisabled: false
+      favouriteDisabled: false,
+      deleteDisabled: false
     }
+  },
+
+  computed: {
+    isSelf() {
+      return this.user.username === this.article.author.username
+    },
+    ...mapState(['user'])
   },
 
   methods: {
@@ -81,6 +109,21 @@ export default {
       } catch (error) {}
     },
 
+    // 删除文章
+    async onDeleteArticle() {
+      try {
+        this.deleteDisabled = true
+        await deleteArticle(this.article.slug)
+        this.$router.push({
+          name: 'Home'
+        })
+      } catch (error) {
+      } finally {
+        this.deleteDisabled = false
+      }
+    },
+
+    // 关注用户后处理，更新作者信息
     afterFollowHandle(profile) {
       this.$emit('updateAuthor', profile)
     }

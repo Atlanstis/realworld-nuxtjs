@@ -83,9 +83,16 @@ export default {
         article.tagList = article.tagList.trim()
           ? article.tagList.split('，')
           : ''
-        await addArticle({ article })
+        const {
+          data: {
+            article: { slug }
+          }
+        } = await addArticle({ article })
         this.$router.push({
-          name: 'Home'
+          name: 'Article',
+          params: {
+            slug: slug
+          }
         })
       } catch (error) {
       } finally {
