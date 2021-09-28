@@ -56,38 +56,60 @@
 </template>
 
 <script>
-import { addArticle } from '@/api'
+import { addArticle, getArticle, updateArticle } from '@/api'
 
 export default {
   name: 'Editor',
   //在路由匹配组件渲染完成之前回先执行中间件处理
   middleware: 'authenticated',
 
+  async asyncData({ query: { slug } }) {
+    let article = {
+      title: '',
+      description: '',
+      body: '',
+      tagList: ''
+    }
+    if (slug) {
+      const {
+        data: { article: val }
+      } = await getArticle(slug)
+      Object.keys(article).forEach((key) => {
+        article[key] = val[key]
+      })
+      article.tagList = Array.isArray(article.tagList)
+        ? article.tagList.join('，')
+        : article.tagList
+    }
+    return { article }
+  },
+
   data() {
     return {
-      article: {
-        title: '',
-        description: '',
-        body: '',
-        tagList: ''
-      },
       publishDisabled: false
     }
   },
+
+  watchQuery: ['slug'],
 
   methods: {
     async onPublish() {
       try {
         this.publishDisabled = true
         const article = { ...this.article }
-        article.tagList = article.tagList.trim()
-          ? article.tagList.split('，')
-          : ''
+        if (article.tagList) {
+          article.tagList = article.tagList.trim()
+            ? article.tagList.split('，')
+            : ''
+        }
+        // 根据 slug 参数，判断新建还是编辑
+        const { slug: articleSlug } = this.$route.query
+        const api = articleSlug ? updateArticle : addArticle
         const {
           data: {
             article: { slug }
           }
-        } = await addArticle({ article })
+        } = await api({ article, slug: articleSlug })
         this.$router.push({
           name: 'Article',
           params: {
@@ -95,6 +117,7 @@ export default {
           }
         })
       } catch (error) {
+        console.log(error)
       } finally {
         this.publishDisabled = false
       }

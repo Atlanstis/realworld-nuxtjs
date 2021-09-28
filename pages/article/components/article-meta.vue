@@ -23,13 +23,18 @@
       <span class="date">{{ article.createdAt | date('MMM DD, YYYY') }}</span>
     </div>
     <template v-if="isSelf">
-      <a
+      <nuxt-link
         class="btn btn-outline-secondary btn-sm"
-        ui-sref="app.editor({ slug: $ctrl.article.slug })"
+        :to="{
+          name: 'Editor',
+          query: {
+            slug: article.slug
+          }
+        }"
         href="#/editor/1234352345"
       >
         <i class="ion-edit"></i> Edit Article
-      </a>
+      </nuxt-link>
 
       <button
         class="btn btn-outline-danger btn-sm"
