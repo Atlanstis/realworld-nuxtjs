@@ -95,7 +95,7 @@ export default {
 
   computed: {
     isSelf() {
-      return this.user.username === this.article.author.username
+      return this.user && this.user.username === this.article.author.username
     },
     ...mapState(['user'])
   },
