@@ -2,6 +2,10 @@
 
 基于 nuxtjs 对 realWorld 的复刻。
 
+### 演示地址
+
+[演示地址](http://www.gypsophila.xyz:3000/)
+
 ## realWorld
 
 [GitHub 仓库](https://github.com/gothinkster/realworld)
@@ -48,7 +52,7 @@ yarn run start
 
 - 将打包生成的 `.nuxt` 目录，`static` 目录，`nuxt.config.js` 配置文件，`package.json`，`yarn.lock` 压缩成压缩包。
 
-- 上传到服务器，后通过 `unzip`  命令解压压缩包。
+- 上传到服务器，后通过 `unzip` 命令解压压缩包。
 
 - 安装环境：
 
@@ -62,5 +66,4 @@ yarn run start
 
 - `pm2 start npm -- start` 启动。[PM2](https://pm2.keymetrics.io/docs/usage/quick-start/)
 
-- 通过 ip + 端口 进行访问。 
-
+- 通过 ip + 端口 进行访问。
