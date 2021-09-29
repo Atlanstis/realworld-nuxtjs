@@ -27,13 +27,13 @@
 ### 开发环境启动
 
 ```shell
-yarn run dev
+npm run dev
 ```
 
 ### 打包
 
 ```shell
-yarn run build
+npm run build
 ```
 
 ### 本地服务启动
@@ -41,7 +41,7 @@ yarn run build
 以生产模式启动一个 Web 服务器（需先执行 build）。
 
 ```
-yarn run start
+npm run start
 ```
 
 ### 部署
